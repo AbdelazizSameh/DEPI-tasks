@@ -24,4 +24,9 @@ class ProductProvider extends ChangeNotifier {
     inBasketProducts.remove(product);
     notifyListeners();
   }
+
+  void removeAllInBasket() {
+    inBasketProducts = [];
+    notifyListeners();
+  }
 }
