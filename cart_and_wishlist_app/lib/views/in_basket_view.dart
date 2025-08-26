@@ -9,10 +9,7 @@ class InBasketView extends StatelessWidget {
   Widget build(BuildContext context) {
     final productProvider = Provider.of<ProductProvider>(context);
     final cartItems = productProvider.inBasketProducts;
-    double totalPrice = 0;
-    for (var item in cartItems) {
-      totalPrice += double.tryParse(item.price.replaceAll("\$", "")) ?? 0;
-    }
+    
 
     return Scaffold(
       appBar: AppBar(title: const Text("Cart"), centerTitle: true),

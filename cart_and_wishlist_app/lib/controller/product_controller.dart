@@ -5,23 +5,28 @@ class ProductProvider extends ChangeNotifier {
   List<ProductModel> favProducts = [];
   List<ProductModel> inBasketProducts = [];
 
-  void addFav(ProductModel product) {
-    favProducts.add(product);
+  double totalPrice = 0;
+
+  double get getTotalPrice => inBasketProducts.fold<double>(
+    0.0,
+    (total, element) => element.price + total,
+  );
+
+  void addRemoveFav(ProductModel product) {
+    if (!favProducts.contains(product)) {
+      favProducts.add(product);
+    } else {
+      favProducts.remove(product);
+    }
     notifyListeners();
   }
 
-  void addInBasket(ProductModel product) {
-    inBasketProducts.add(product);
-    notifyListeners();
-  }
-
-  void removeFav(ProductModel product) {
-    favProducts.remove(product);
-    notifyListeners();
-  }
-
-  void removeInBasket(ProductModel product) {
-    inBasketProducts.remove(product);
+  void addRemoveInBasket(ProductModel product) {
+    if (!inBasketProducts.contains(product)) {
+      inBasketProducts.add(product);
+    } else {
+      inBasketProducts.remove(product);
+    }
     notifyListeners();
   }
 
