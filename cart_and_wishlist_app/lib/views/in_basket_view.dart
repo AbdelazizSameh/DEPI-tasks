@@ -1,4 +1,6 @@
 import 'package:cart_and_wishlist_app/controller/product_controller.dart';
+import 'package:cart_and_wishlist_app/widgets/in_basket_list_view_builder.dart';
+import 'package:cart_and_wishlist_app/widgets/price_with_check_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -9,7 +11,6 @@ class InBasketView extends StatelessWidget {
   Widget build(BuildContext context) {
     final productProvider = Provider.of<ProductProvider>(context);
     final cartItems = productProvider.inBasketProducts;
-    
 
     return Scaffold(
       appBar: AppBar(title: const Text("Cart"), centerTitle: true),
@@ -18,45 +19,12 @@ class InBasketView extends StatelessWidget {
           : Column(
               children: [
                 Expanded(
-                  child: ListView.builder(
-                    padding: const EdgeInsets.all(10),
-                    itemCount: cartItems.length,
-                    itemBuilder: (context, index) {
-                      final product = cartItems[index];
-                      return ListTile(
-                        title: Text(product.name),
-                        trailing: IconButton(
-                          icon: const Icon(Icons.remove),
-                          onPressed: () {
-                            productProvider.removeInBasket(product);
-                          },
-                        ),
-                      );
-                    },
+                  child: InBasketProductListViewBuilder(
+                    cartItems: cartItems,
+                    productProvider: productProvider,
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    children: [
-                      Text(
-                        "Total: \$${totalPrice.toStringAsFixed(2)}",
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      ElevatedButton(
-                        onPressed: () {},
-                        style: ElevatedButton.styleFrom(
-                          minimumSize: const Size(double.infinity, 50),
-                        ),
-                        child: const Text("Checkout"),
-                      ),
-                    ],
-                  ),
-                ),
+                PriceWithCheckoutButton(productProvider: productProvider),
               ],
             ),
     );

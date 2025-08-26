@@ -1,4 +1,5 @@
 import 'package:cart_and_wishlist_app/controller/product_controller.dart';
+import 'package:cart_and_wishlist_app/widgets/fav_product_list_view_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -25,37 +26,9 @@ class FavView extends StatelessWidget {
       ),
       body: favItems.isEmpty
           ? const Center(child: Text("No items in wishlist"))
-          : ListView.builder(
-              padding: const EdgeInsets.all(10),
-              itemCount: favItems.length,
-              itemBuilder: (context, index) {
-                final product = favItems[index];
-                return Card(
-                  margin: const EdgeInsets.only(bottom: 10),
-                  child: ListTile(
-                    leading: const Icon(Icons.favorite, color: Colors.red),
-                    title: Text(product.name),
-                    subtitle: Text(product.price),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.delete),
-                          onPressed: () {
-                            productProvider.removeFav(product);
-                          },
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.add_shopping_cart_outlined),
-                          onPressed: () {
-                            productProvider.addInBasket(product);
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
+          : FavProductListViewBuilder(
+              favItems: favItems,
+              productProvider: productProvider,
             ),
     );
   }
