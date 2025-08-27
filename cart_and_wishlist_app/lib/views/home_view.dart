@@ -1,6 +1,7 @@
 import 'package:cart_and_wishlist_app/models/product_model.dart';
 import 'package:cart_and_wishlist_app/views/fav_view.dart';
 import 'package:cart_and_wishlist_app/widgets/custom_cart_icon.dart';
+import 'package:cart_and_wishlist_app/widgets/custom_drawer.dart';
 import 'package:cart_and_wishlist_app/widgets/product_card_list_view_builder.dart';
 import 'package:flutter/material.dart';
 
@@ -39,6 +40,8 @@ class HomeView extends StatelessWidget {
           CustomCartIcon(),
         ],
       ),
+      drawer: CustomDrawer(),
+
       body: ProductListViewBuilder(products: dummyProducts),
     );
   }
