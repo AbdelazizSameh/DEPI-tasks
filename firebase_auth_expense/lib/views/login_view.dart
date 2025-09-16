@@ -1,9 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth_expense/auth/google_auth.dart';
 import 'package:firebase_auth_expense/helpers/helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import '../widgets/custom_sign_and_register_button.dart';
 import '../widgets/custom_text_field.dart';
+import 'home_view.dart';
 import 'register_view.dart';
 
 class LoginView extends StatefulWidget {
@@ -144,6 +146,10 @@ class _LoginViewState extends State<LoginView> {
                       setState(() {});
                     },
                   ),
+                  CustomSignAndRegisterButton(
+                    text: 'Login with google',
+                    onTap: () {},
+                  ),
                 ],
               ),
             ),
@@ -158,5 +164,35 @@ class _LoginViewState extends State<LoginView> {
       email: email!,
       password: password!,
     );
+  }
+
+  Future<void> signInWithGoogle() async {
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      final userCredential = await GoogleSignInService.signInWithGoogle();
+
+      if (!mounted) return;
+      if (userCredential != null) {
+        if (!mounted) return;
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => HomeView()),
+        );
+        showSnackBar(context, message: "Google Login failed");
+      }
+    } catch (e) {
+      if (!mounted) return;
+      // For error
+      showSnackBar(context, message: "Google Login failed");
+      print('Sign in error: $e');
+    } finally {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    }
   }
 }
