@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../cloud_fire_store/cloud_fire_store.dart';
 import '../models/expense_model.dart';
@@ -15,6 +16,16 @@ class HomeView extends StatelessWidget {
       appBar: AppBar(
         title: const Text("Journals"),
         automaticallyImplyLeading: false,
+        leading: IconButton(
+          onPressed: () async => await FirebaseAuth.instance.signOut(),
+          icon: Icon(Icons.logout),
+        ),
+        actions: [
+          IconButton(
+            onPressed: () async => await databaseService.deleteAllJournals(),
+            icon: Icon(Icons.delete_forever),
+          ),
+        ],
       ),
       body: StreamBuilder<List<Journal>>(
         stream: databaseService.getJournal(),

@@ -7,7 +7,6 @@ class FirebaseDatabase {
   static const usersCollectionName = "users";
   static const journalsCollectionName = "journals";
 
-  /// READ - real-time stream of all journals
   Stream<List<Journal>> getJournal() {
     final userId = FirebaseAuth.instance.currentUser?.uid;
     if (userId == null) throw "No user logged in";
@@ -24,7 +23,6 @@ class FirebaseDatabase {
         );
   }
 
-  /// CREATE - add new journal
   Future<void> addJournal(Journal journal) async {
     final userId = FirebaseAuth.instance.currentUser?.uid;
     if (userId == null) throw "No user logged in";
@@ -38,7 +36,6 @@ class FirebaseDatabase {
     await docRef.set(journal.toMap()..['id'] = docRef.id);
   }
 
-  /// UPDATE - update journal by ID
   Future<void> updateJournal(Journal journal) async {
     final userId = FirebaseAuth.instance.currentUser?.uid;
     if (userId == null) throw "No user logged in";
@@ -51,7 +48,6 @@ class FirebaseDatabase {
         .update(journal.toMap());
   }
 
-  /// DELETE - delete journal by ID
   Future<void> deleteJournal(String journalId) async {
     final userId = FirebaseAuth.instance.currentUser?.uid;
     if (userId == null) throw "No user logged in";
@@ -62,5 +58,26 @@ class FirebaseDatabase {
         .collection(journalsCollectionName)
         .doc(journalId)
         .delete();
+  }
+
+  Future<void> deleteAllJournals() async {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+    if (userId == null) {
+      throw "No user logged in";
+    }
+
+    final journalsRef = _db
+        .collection(usersCollectionName)
+        .doc(userId)
+        .collection(journalsCollectionName);
+
+    final snapshot = await journalsRef.get();
+    final batch = _db.batch();
+
+    for (final doc in snapshot.docs) {
+      batch.delete(doc.reference);
+    }
+
+    await batch.commit();
   }
 }
