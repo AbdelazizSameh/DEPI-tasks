@@ -10,7 +10,7 @@ class GoogleSignInService {
     if (!isInitialize) {
       await _googleSignIn.initialize(
         serverClientId:
-            '637158461690-2euupfv001j0rupjqgekoghpqb1p7i2j.apps.googleusercontent.com',
+            '484988555302-d91nev5jn5sit0qoe3oehpgpp58pl5mt.apps.googleusercontent.com',
       );
     }
     isInitialize = true;
@@ -72,7 +72,7 @@ class GoogleSignInService {
       await _auth.signOut();
     } catch (e) {
       print('Error signing out: $e');
-      throw e;
+      rethrow;
     }
   }
 

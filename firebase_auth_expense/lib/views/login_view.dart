@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_auth_expense/auth/google_auth.dart';
 import 'package:firebase_auth_expense/helpers/helpers.dart';
@@ -46,7 +47,6 @@ class _LoginViewState extends State<LoginView> {
                       Icon(Icons.person, size: 80, color: Colors.deepPurple),
                     ],
                   ),
-
                   const SizedBox(height: 40),
                   const Text(
                     "Sign in",
@@ -69,7 +69,6 @@ class _LoginViewState extends State<LoginView> {
                         "Don't have an account? ",
                         style: TextStyle(fontWeight: FontWeight.w500),
                       ),
-
                       GestureDetector(
                         onTap: () {
                           Navigator.pushNamed(context, RegisterView.id);
@@ -84,9 +83,7 @@ class _LoginViewState extends State<LoginView> {
                       ),
                     ],
                   ),
-
                   const SizedBox(height: 32),
-
                   CustomTextFormField(
                     onChanged: (emailValue) {
                       email = emailValue;
@@ -103,7 +100,6 @@ class _LoginViewState extends State<LoginView> {
                     hintText: 'Password',
                     labelText: 'min length is 8',
                   ),
-
                   const SizedBox(height: 12),
                   Align(
                     alignment: Alignment.centerRight,
@@ -115,18 +111,24 @@ class _LoginViewState extends State<LoginView> {
                       ),
                     ),
                   ),
-
                   const SizedBox(height: 20),
                   CustomSignAndRegisterButton(
                     text: 'Login',
                     onTap: () async {
                       if (formKey.currentState!.validate()) {
-                        isLoading = true;
-                        setState(() {});
+                        if (!mounted) return;
+                        setState(() => isLoading = true);
                         try {
                           await signInUser();
+                          if (!mounted) return;
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const HomeView()),
+                          );
                           showSnackBar(context, message: 'success');
                         } on FirebaseAuthException catch (e) {
+                          if (!mounted) return;
                           if (e.code == 'user-not-found') {
                             showSnackBar(
                               context,
@@ -140,15 +142,19 @@ class _LoginViewState extends State<LoginView> {
                           } else {
                             showSnackBar(context, message: e.code);
                           }
+                        } finally {
+                          if (!mounted) return;
+                          setState(() => isLoading = false);
                         }
                       }
-                      isLoading = false;
-                      setState(() {});
                     },
                   ),
+                  const SizedBox(height: 20),
                   CustomSignAndRegisterButton(
                     text: 'Login with google',
-                    onTap: () {},
+                    onTap: () async {
+                      await signInWithGoogle();
+                    },
                   ),
                 ],
               ),
@@ -167,32 +173,25 @@ class _LoginViewState extends State<LoginView> {
   }
 
   Future<void> signInWithGoogle() async {
-    setState(() {
-      isLoading = true;
-    });
+    if (!mounted) return;
+    setState(() => isLoading = true);
     try {
       final userCredential = await GoogleSignInService.signInWithGoogle();
-
-      if (!mounted) return;
-      if (userCredential != null) {
-        if (!mounted) return;
-        Navigator.push(
+      if (userCredential != null && mounted) {
+        Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => HomeView()),
+          MaterialPageRoute(builder: (context) => const HomeView()),
         );
-        showSnackBar(context, message: "Google Login failed");
+        showSnackBar(context, message: "Google Login success");
       }
     } catch (e) {
-      if (!mounted) return;
-      // For error
-      showSnackBar(context, message: "Google Login failed");
-      print('Sign in error: $e');
-    } finally {
       if (mounted) {
-        setState(() {
-          isLoading = false;
-        });
+        showSnackBar(context, message: "Google Login failed");
       }
+      log('Sign in error: $e');
+    } finally {
+      if (!mounted) return;
+      setState(() => isLoading = false);
     }
   }
 }
